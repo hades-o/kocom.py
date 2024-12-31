@@ -525,8 +525,7 @@ def packet_processor(p):
             state = fan_parse(p['value'])
             logtxt='[MQTT publish|fan] data[{}]'.format(state)
             mqttc.publish("kocom/livingroom/fan/state", json.dumps(state))    
-        elif p['dest'] == 'gas':
-        #elif p['src'] == 'gas':
+        elif p['src'] == 'gas':
             state = {'state': p['cmd']}
             logtxt='[MQTT publish|gas] data[{}]'.format(state)
             mqttc.publish("kocom/livingroom/gas/state", json.dumps(state))
