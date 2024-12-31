@@ -534,7 +534,7 @@ def packet_processor(p):
         rs485_floor = int(config.get('Elevator','rs485_floor', fallback=0))
         if rs485_floor != 0 :
             state = {'floor': floor}
-            if rs485_floor==floor:
+            if rs485_floor == floor:
                 state['state'] = 'off'
         else:
             state = {'state': 'off'}
@@ -676,7 +676,7 @@ def publish_discovery(dev, sub=''):
             'curr_temp_tpl': '{{ value_json.cur_temp }}',
             'modes': ['off', 'heat'],
             'min_temp': 20,
-            'max_temp': 25,
+            'max_temp': 30,
             'ret': 'false',
             'qos': 0,
             'uniq_id': '{}_{}_{}{}'.format('kocom', 'wallpad', dev, num),
