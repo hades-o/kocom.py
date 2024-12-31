@@ -82,7 +82,7 @@ def mqtt_on_subscribe(mqttc, obj, mid, granted_qos):
 def mqtt_on_log(mqttc, obj, level, string):
     logging.info("[MQTT] on_log : "+string)
 
-def mqtt_on_connect(client, userdata, flags, rc, properties):
+def mqtt_on_connect(client, userdata, flags, rc, properties=None):
     print("Connected with result code", rc)
     if rc == 0:
         logging.info("[MQTT] Connected - 0: OK")
