@@ -508,20 +508,16 @@ def publish_status(p):
 
 def packet_processor(p):
     logtxt = ""
-    if p['type']=='ack' and p['src']=='wallpad':  # ack from wallpad
-    #if p['type']=='send' and p['dest']=='wallpad':  # response packet to wallpad
-        if p['dest'] == 'thermo' and p['cmd']=='state':
-        #if p['src'] == 'thermo' and p['cmd']=='state':
+    if p['type']=='send' and p['dest']=='wallpad':  # ack from wallpad
+        if p['src'] == 'thermo' and p['cmd'] == 'state':
             state = thermo_parse(p['value'])
             logtxt='[MQTT publish|thermo] room{} data[{}]'.format(p['dest_subid'], state)
             mqttc.publish("kocom/room/thermo/" + p['dest_subid'] + "/state", json.dumps(state))
-        elif p['dest'] == 'light' and p['cmd']=='state':
-        #elif p['src'] == 'light' and p['cmd']=='state':
+        elif p['src'] == 'light' and p['cmd']=='state':
             state = light_parse(p['value'])
             logtxt='[MQTT publish|light] data[{}]'.format(state)
             mqttc.publish("kocom/livingroom/light/state", json.dumps(state))
-        elif p['dest'] == 'fan' and p['cmd']=='state':
-        #elif p['src'] == 'fan' and p['cmd']=='state':
+        elif p['src'] == 'fan' and p['cmd']=='state':
             state = fan_parse(p['value'])
             logtxt='[MQTT publish|fan] data[{}]'.format(state)
             mqttc.publish("kocom/livingroom/fan/state", json.dumps(state))    
@@ -774,7 +770,7 @@ def read_serial():
                 not_parsed_buf = ''
 
 
-            if len(buf) == packet_size*2:
+            if len(buf) == (packet_size * 2):
                 chksum_calc = chksum(buf[len(header_h):chksum_position*2])
                 chksum_buf = buf[chksum_position*2:chksum_position*2+2]
                 if chksum_calc == chksum_buf and buf[-len(trailer_h):] == trailer_h:
