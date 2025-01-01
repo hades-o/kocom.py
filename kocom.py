@@ -51,21 +51,24 @@ room_h_dic = {'livingroom':'00', 'myhome':'00', 'bedroom':'01', 'room1':'02', 'r
 # mqtt functions ----------------------------
 
 def init_mqttc():
-    mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+    mqttc = mqtt.Client(protocol=mqtt.MQTTv311)  # 명시적으로 MQTT v3.1.1 설정
     mqttc.on_message = mqtt_on_message
     mqttc.on_subscribe = mqtt_on_subscribe
     mqttc.on_connect = mqtt_on_connect
     mqttc.on_disconnect = mqtt_on_disconnect
 
-    if config.get('MQTT','mqtt_allow_anonymous') != 'True':
+    if config.get('MQTT', 'mqtt_allow_anonymous') != 'True':
         logtxt = "[MQTT] connecting (using username and password)"
-        mqttc.username_pw_set(username=config.get('MQTT','mqtt_username',fallback=''), password=config.get('MQTT','mqtt_password',fallback=''))
+        mqttc.username_pw_set(
+            username=config.get('MQTT', 'mqtt_username', fallback=''),
+            password=config.get('MQTT', 'mqtt_password', fallback='')
+        )
     else:
         logtxt = "[MQTT] connecting (anonymous)"
 
-    mqtt_server = config.get('MQTT','mqtt_server')
-    mqtt_port = int(config.get('MQTT','mqtt_port'))
-    for retry_cnt in range(1,31):
+    mqtt_server = config.get('MQTT', 'mqtt_server')
+    mqtt_port = int(config.get('MQTT', 'mqtt_port'))
+    for retry_cnt in range(1, 31):
         try:
             logging.info(logtxt)
             mqttc.connect(mqtt_server, mqtt_port, 60)
@@ -76,22 +79,19 @@ def init_mqttc():
             time.sleep(10)
     return False
 
-def mqtt_on_subscribe(mqttc, obj, mid, granted_qos):
+def mqtt_on_subscribe(mqttc, obj, mid, granted_qos, properties=None):
     logging.info("[MQTT] Subscribed: " + str(mid) + " " + str(granted_qos))
-
-def mqtt_on_log(mqttc, obj, level, string):
-    logging.info("[MQTT] on_log : "+string)
 
 def mqtt_on_connect(client, userdata, flags, rc, properties=None):
     print("Connected with result code", rc)
     if rc == 0:
         logging.info("[MQTT] Connected - 0: OK")
-        mqttc.subscribe('kocom/#', 0)
+        client.subscribe('kocom/#', 0)
     else:
         logging.error("[MQTT] Connection error - {}: {}".format(rc, mqtt.connack_string(rc)))
 
 def mqtt_on_disconnect(mqttc, userdata, rc=0):
-    logging.error("[MQTT] Disconnected - "+str(rc))
+    logging.error("[MQTT] Disconnected - " + str(rc))
 
 
 # serial/socket communication class & functions--------------------
