@@ -613,17 +613,18 @@ def publish_discovery(dev, sub=''):
         if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
             logging.info(logtxt)
     elif dev == 'elevator':
-        topic = 'homeassistant/switch/kocom_wallpad_elevator/config'
+    for i in ['elevator', 'evsensor']:
+        component = 'switch' if i == 'elevator' else 'sensor'
+        topic = f'homeassistant/{component}/kocom_wallpad_{i}/config'
         payload = {
-            'name': 'Kocom Wallpad Elevator',
+            'name': f'Kocom Wallpad {i}',
             'cmd_t': "kocom/myhome/elevator/command",
             'stat_t': "kocom/myhome/elevator/state",
-            'val_tpl': "{{ value_json.state }}",
+            'val_tpl': "{{ value_json.floor }}",
             'pl_on': 'on',
             'pl_off': 'off',
-            'ic': 'mdi:elevator',
             'qos': 0,
-            'uniq_id': '{}_{}_{}'.format('kocom', 'wallpad', dev),
+            'uniq_id': '{}_{}_{}'.format('kocom', 'wallpad', i),
             'device': {
                 'name': '코콤 스마트 월패드',
                 'ids': 'kocom_smart_wallpad',
@@ -632,7 +633,7 @@ def publish_discovery(dev, sub=''):
                 'sw': SW_VERSION
             }
         }
-        logtxt='[MQTT Discovery|{}] data[{}]'.format(dev, topic)
+        logtxt='[MQTT Discovery|{}] data[{}]'.format(i, topic)
         mqttc.publish(topic, json.dumps(payload))
         if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
             logging.info(logtxt)
