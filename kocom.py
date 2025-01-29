@@ -24,7 +24,7 @@ import configparser
 
 
 # define -------------------------------
-SW_VERSION = '2024.03.12'
+SW_VERSION = '2025.01.29'
 CONFIG_FILE = 'kocom.conf'
 BUF_SIZE = 100
 
@@ -613,7 +613,7 @@ def publish_discovery(dev, sub=''):
         if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
             logging.info(logtxt)
     elif dev == 'elevator':
-    for i in ['elevator', 'evsensor']:
+        for i in ['elevator', 'evsensor']:
         component = 'switch' if i == 'elevator' else 'sensor'
         topic = f'homeassistant/{component}/kocom_wallpad_{i}/config'
         payload = {
