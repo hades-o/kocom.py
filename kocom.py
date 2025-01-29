@@ -614,7 +614,7 @@ def publish_discovery(dev, sub=''):
             logging.info(logtxt)
     elif dev == 'elevator':
         for i in ['elevator', 'evsensor']:
-        component = 'switch' if i == 'elevator' else 'sensor'
+            component = 'switch' if i == 'elevator' else 'sensor'
         topic = f'homeassistant/{component}/kocom_wallpad_{i}/config'
         payload = {
             'name': f'Kocom Wallpad {i}',
