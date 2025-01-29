@@ -538,7 +538,6 @@ def packet_processor(p):
                logtxt = '[MQTT publish|elevator] data: {}'.format(state)
                mqttc.publish("kocom/myhome/elevator/state", json.dumps(state))
                logging.info(logtxt)
-        
            except Exception as e:
                logging.error(f"[MQTT Elevator] Error processing elevator data: {e}")
                # aa5530bc0044000100010300000000000000350d0d
