@@ -528,29 +528,20 @@ def packet_processor(p):
             state = {'state': p['cmd']}
             logtxt='[MQTT publish|gas] data[{}]'.format(state)
             mqttc.publish("kocom/livingroom/gas/state", json.dumps(state))
-elif p['type'] == 'send' and p['dest'] == 'elevator':
-    try:
-        floor = int(p['value'][2:4], 16)  # 현재 층 정보
-        direction_code = p['value'][4:6]  # 방향 정보 (예: '01' = up, '02' = down)
-
-        direction_dict = {
-            '01': 'up',
-            '02': 'down'
-        }
-        direction = direction_dict.get(direction_code, 'stop')  # 기본값: stop
-
-        state = {
-            'floor': f"{floor}층",  # '층' 단위 추가
-            'direction': direction
-        }
-
-        logtxt = '[MQTT publish|elevator] data: {}'.format(state)
-        mqttc.publish("kocom/myhome/elevator/state", json.dumps(state))
-        logging.info(logtxt)
+        elif p['type'] == 'send' and p['dest'] == 'elevator':
+           try:
+               floor = int(p['value'][2:4], 16)  # 현재 층 정보
+               direction_code = p['value'][4:6]  # 방향 정보 (예: '01' = up, '02' = down)
+               direction_dict = {'01': 'up', '02': 'down'}
+               direction = direction_dict.get(direction_code, 'stop')  # 기본값: stop
+               state = {'floor': f"{floor}층", 'direction': direction}
+               logtxt = '[MQTT publish|elevator] data: {}'.format(state)
+               mqttc.publish("kocom/myhome/elevator/state", json.dumps(state))
+               logging.info(logtxt)
         
-    except Exception as e:
-        logging.error(f"[MQTT Elevator] Error processing elevator data: {e}")
-        # aa5530bc0044000100010300000000000000350d0d
+           except Exception as e:
+               logging.error(f"[MQTT Elevator] Error processing elevator data: {e}")
+               # aa5530bc0044000100010300000000000000350d0d
 
     if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
         logging.info(logtxt)
