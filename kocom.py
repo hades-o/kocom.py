@@ -615,9 +615,9 @@ def publish_discovery(dev, sub=''):
     elif dev == 'elevator':
         for i in ['elevator', 'evsensor']:
             component = 'switch' if i == 'elevator' else 'sensor'
-        topic = f'homeassistant/{component}/kocom_wallpad_{i}/config'
+        topic = 'homeassistant/{component}/kocom_wallpad_{i}/config'
         payload = {
-            'name': f'Kocom Wallpad {i}',
+            'name': 'Kocom Wallpad {i}',
             'cmd_t': "kocom/myhome/elevator/command",
             'stat_t': "kocom/myhome/elevator/state",
             'val_tpl': "{{ value_json.floor }}",
