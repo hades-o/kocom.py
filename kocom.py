@@ -614,7 +614,7 @@ def publish_discovery(dev, sub=''):
             logging.info(logtxt)
 def publish_discovery(dev, sub=''):
     if dev == 'elevator':
-        # 1. 엘리베이터 스위치 (호출 기능)
+        # 1. 엘리베이터 호출 스위치
         topic_switch = 'homeassistant/switch/kocom_wallpad_elevator/config'
         payload_switch = {
             'name': 'Kocom Wallpad Elevator',
@@ -635,9 +635,9 @@ def publish_discovery(dev, sub=''):
         mqttc.publish(topic_switch, json.dumps(payload_switch))
         logging.info(f'[MQTT Discovery|elevator] data[{topic_switch}]')
 
-        # 2. 엘리베이터 층 정보 센서 추가
-        topic_sensor = 'homeassistant/sensor/kocom_wallpad_elevator_floor/config'
-        payload_sensor = {
+        # 2. 엘리베이터 현재 층 센서
+        topic_floor = 'homeassistant/sensor/kocom_wallpad_elevator_floor/config'
+        payload_floor = {
             'name': 'Kocom Wallpad Elevator Floor',
             'stat_t': "kocom/myhome/elevator/state",
             'val_tpl': "{{ value_json.floor }}",
@@ -653,10 +653,30 @@ def publish_discovery(dev, sub=''):
                 'sw': SW_VERSION
             }
         }
-        mqttc.publish(topic_sensor, json.dumps(payload_sensor))
-        logging.info(f'[MQTT Discovery|elevator_floor] data[{topic_sensor}]')
+        mqttc.publish(topic_floor, json.dumps(payload_floor))
+        logging.info(f'[MQTT Discovery|elevator_floor] data[{topic_floor}]')
 
-        # 3. 엘리베이터 호출 버튼 추가 (MQTT Button)
+        # 3. 엘리베이터 방향 센서 (업/다운/정지)
+        topic_direction = 'homeassistant/sensor/kocom_wallpad_elevator_direction/config'
+        payload_direction = {
+            'name': 'Kocom Wallpad Elevator Direction',
+            'stat_t': "kocom/myhome/elevator/state",
+            'val_tpl': "{{ value_json.direction }}",
+            'icon': 'mdi:arrow-up-down',
+            'qos': 0,
+            'uniq_id': 'kocom_wallpad_elevator_direction',
+            'device': {
+                'name': '코콤 스마트 월패드',
+                'ids': 'kocom_smart_wallpad',
+                'mf': 'KOCOM',
+                'mdl': '스마트 월패드',
+                'sw': SW_VERSION
+            }
+        }
+        mqttc.publish(topic_direction, json.dumps(payload_direction))
+        logging.info(f'[MQTT Discovery|elevator_direction] data[{topic_direction}]')
+
+        # 4. 엘리베이터 호출 버튼 (MQTT Button)
         topic_button = 'homeassistant/button/kocom_wallpad_elevator_call/config'
         payload_button = {
             'name': 'Kocom Wallpad Elevator Call',
