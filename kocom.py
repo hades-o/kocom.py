@@ -612,19 +612,18 @@ def publish_discovery(dev, sub=''):
         mqttc.publish(topic, json.dumps(payload))
         if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
             logging.info(logtxt)
-    elif dev == 'elevator':
-        for i in ['elevator', 'evsensor']:
-            component = 'switch' if i == 'elevator' else 'sensor'
-        topic = 'homeassistant/{component}/kocom_wallpad_{i}/config'
-        payload = {
-            'name': 'Kocom Wallpad {i}',
+def publish_discovery(dev, sub=''):
+    if dev == 'elevator':
+        # 1. 엘리베이터 스위치 (호출 기능)
+        topic_switch = 'homeassistant/switch/kocom_wallpad_elevator/config'
+        payload_switch = {
+            'name': 'Kocom Wallpad Elevator',
             'cmd_t': "kocom/myhome/elevator/command",
             'stat_t': "kocom/myhome/elevator/state",
-            'val_tpl': "{{ value_json.floor }}",
             'pl_on': 'on',
             'pl_off': 'off',
             'qos': 0,
-            'uniq_id': '{}_{}_{}'.format('kocom', 'wallpad', i),
+            'uniq_id': 'kocom_wallpad_elevator',
             'device': {
                 'name': '코콤 스마트 월패드',
                 'ids': 'kocom_smart_wallpad',
@@ -633,10 +632,48 @@ def publish_discovery(dev, sub=''):
                 'sw': SW_VERSION
             }
         }
-        logtxt='[MQTT Discovery|{}] data[{}]'.format(i, topic)
-        mqttc.publish(topic, json.dumps(payload))
-        if logtxt != "" and config.get('Log', 'show_mqtt_publish') == 'True':
-            logging.info(logtxt)
+        mqttc.publish(topic_switch, json.dumps(payload_switch))
+        logging.info(f'[MQTT Discovery|elevator] data[{topic_switch}]')
+
+        # 2. 엘리베이터 층 정보 센서 추가
+        topic_sensor = 'homeassistant/sensor/kocom_wallpad_elevator_floor/config'
+        payload_sensor = {
+            'name': 'Kocom Wallpad Elevator Floor',
+            'stat_t': "kocom/myhome/elevator/state",
+            'val_tpl': "{{ value_json.floor }}",
+            'unit_of_meas': "층",
+            'dev_cla': "measurement",
+            'qos': 0,
+            'uniq_id': 'kocom_wallpad_elevator_floor',
+            'device': {
+                'name': '코콤 스마트 월패드',
+                'ids': 'kocom_smart_wallpad',
+                'mf': 'KOCOM',
+                'mdl': '스마트 월패드',
+                'sw': SW_VERSION
+            }
+        }
+        mqttc.publish(topic_sensor, json.dumps(payload_sensor))
+        logging.info(f'[MQTT Discovery|elevator_floor] data[{topic_sensor}]')
+
+        # 3. 엘리베이터 호출 버튼 추가 (MQTT Button)
+        topic_button = 'homeassistant/button/kocom_wallpad_elevator_call/config'
+        payload_button = {
+            'name': 'Kocom Wallpad Elevator Call',
+            'cmd_t': 'kocom/myhome/elevator/command',
+            'pl_press': 'on',
+            'qos': 0,
+            'uniq_id': 'kocom_wallpad_elevator_button',
+            'device': {
+                'name': '코콤 스마트 월패드',
+                'ids': 'kocom_smart_wallpad',
+                'mf': 'KOCOM',
+                'mdl': '스마트 월패드',
+                'sw': SW_VERSION
+            }
+        }
+        mqttc.publish(topic_button, json.dumps(payload_button))
+        logging.info(f'[MQTT Discovery|elevator_button] data[{topic_button}]')
     elif dev == 'light':
         for num in range(1, int(config.get('User', 'light_count'))+1):
             #ha_topic = 'homeassistant/light/kocom_livingroom_light1/config'
