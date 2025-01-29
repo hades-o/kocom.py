@@ -22,6 +22,8 @@ share/kocom/ 폴더에 있는 파일을 알맞게 수정하신 다음에
 
 ## Change log
 
+(2025-01-29 수정) 엘레베이터 층수 표시
+
 (2024-03-12 수정) paho-mqtt-2.0.0 대응
 
 (2022-07-24 수정) config.json을 config.yaml로 변환
